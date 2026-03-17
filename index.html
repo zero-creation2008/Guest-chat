@@ -1,270 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guest Chat | Zero</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --bg: #0b141a; --panel: #111b21; --text: #e9edef; --bubble-in: #202c33; --bubble-out: #005c4b; --header: #202c33; }
-        .light-theme { --bg: #e5ddd5; --panel: #ffffff; --text: #111b21; --bubble-in: #ffffff; --bubble-out: #dcf8c6; --header: #f0f2f5; }
-        
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #000; color: var(--text); font-family: 'Segoe UI', sans-serif; }
-        .mobile-container { width: 100%; max-width: 450px; height: 100%; margin: 0 auto; display: flex; flex-direction: column; background: var(--bg); position: relative; }
-        
-        #menu-screen, #chat-screen { height: 100%; width: 100%; display: flex; flex-direction: column; }
-        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: var(--bg); }
-        
-        header { padding: 10px 15px; background: var(--header); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; position: relative; font-size: 14px; box-shadow: 0 1px 1px rgba(0,0,0,0.2); }
-        .bubble.me { align-self: flex-end; background: var(--bubble-out); border-top-right-radius: 2px; color: white; }
-        .bubble.them { align-self: flex-start; background: var(--bubble-in); border-top-left-radius: 2px; }
-        
-        .img-msg { max-width: 100%; border-radius: 8px; margin-top: 5px; }
-        .hidden { display: none !important; }
-        input[type="number"]::-webkit-inner-spin-button { display: none; }
-        .archive-item { background: var(--header); padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero - Login</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body {
+    background:#0b141a;
+    color:white;
+    height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:sans-serif;
+}
+.auth-card {
+    width:100%;
+    max-width:400px;
+    padding:2rem;
+    background:#111b21;
+    border-radius:1.5rem;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    border:1px solid #222;
+    animation:fadeIn .5s ease;
+}
+@keyframes fadeIn {
+    from {opacity:0; transform:translateY(20px);}
+    to {opacity:1; transform:translateY(0);}
+}
+input {
+    width:100%;
+    background:#2a3942;
+    border:1px solid #333;
+    padding:.85rem;
+    border-radius:.75rem;
+    margin-bottom:1rem;
+    color:white;
+    outline:none;
+}
+input:focus {
+    border-color:#00a884;
+    background:#32444f;
+}
+.btn-primary {
+    width:100%;
+    background:#00a884;
+    padding:.85rem;
+    border-radius:.75rem;
+    font-weight:bold;
+    margin-bottom:.75rem;
+}
+</style>
 </head>
-<body class="dark-theme">
 
-<div class="mobile-container">
-    <div id="menu-screen" class="p-6 justify-center">
-        <div class="text-center mb-10">
-            <h1 class="text-5xl font-black text-green-500">Zero</h1>
-            <p class="text-gray-400 tracking-widest text-sm uppercase mt-2">Private Guest Chat</p>
-        </div>
-        
-        <div class="space-y-4">
-            <input id="user-name" type="text" placeholder="Enter Your Name" class="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white outline-none focus:border-green-500">
-            
-            <button onclick="showCreateOptions()" class="w-full bg-green-600 hover:bg-green-700 p-4 rounded-xl font-bold transition">Create New Room</button>
-            <div id="create-options" class="hidden space-y-3 p-4 bg-gray-900 rounded-xl border border-gray-700">
-                <label class="text-xs text-gray-500">Destroy room after (minutes):</label>
-                <input id="destroy-time" type="number" placeholder="Minutes (e.g. 60)" class="w-full p-2 rounded bg-gray-800 text-white outline-none">
-                <button onclick="createRoom()" class="w-full bg-green-500 p-2 rounded font-bold text-sm">Launch Room</button>
-            </div>
+<body>
 
-            <div class="flex items-center gap-2 py-2"><hr class="flex-grow border-gray-800"> <span class="text-gray-600">OR</span> <hr class="flex-grow border-gray-800"></div>
+<div class="auth-card">
+    <h1 class="text-4xl text-center text-[#00a884] font-black mb-4">ZERO</h1>
 
-            <input id="join-room-id" type="text" placeholder="Paste 16-character Room ID" class="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white outline-none">
-            <button onclick="joinRoom()" class="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded-xl font-bold transition">Join Room</button>
-        </div>
+    <p id="msg" class="text-red-400 text-sm mb-2 text-center"></p>
 
-        <div class="mt-10 overflow-hidden">
-            <h3 class="text-xs font-bold text-gray-500 uppercase mb-4">Internal Saved Chats</h3>
-            <div id="archive-list" class="max-h-48 overflow-y-auto pr-2"></div>
-        </div>
-        <p class="mt-auto pt-8 text-center text-gray-600 text-xs font-medium">App Creator: Zero</p>
-    </div>
+    <input id="email" type="email" placeholder="Email">
+    <input id="pass" type="password" placeholder="Password">
 
-    <div id="chat-screen" class="hidden">
-        <header>
-            <div class="flex items-center gap-3">
-                <button onclick="leaveChat()" class="text-gray-400"><i class="fas fa-arrow-left text-lg"></i></button>
-                <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center font-bold text-white shadow-lg">Z</div>
-                <div>
-                    <p class="text-sm font-bold leading-tight">Zero's Chat</p>
-                    <p id="display-room-id" class="text-[9px] text-gray-400 uppercase tracking-tighter"></p>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <button onclick="shareRoom()" class="text-gray-400"><i class="fas fa-share-nodes text-lg"></i></button>
-                <button onclick="toggleTheme()" class="text-gray-400"><i class="fas fa-circle-half-stroke text-lg"></i></button>
-                <button id="admin-delete-btn" onclick="destroyRoom()" class="hidden bg-red-600 text-[10px] px-2 py-1 rounded font-black text-white">NUKE</button>
-            </div>
-        </header>
+    <button id="btnLogin" class="btn-primary">Login</button>
+    <button id="btnSignup" class="w-full text-emerald-400 text-sm mb-4">Create Account</button>
 
-        <div id="chat-messages"></div>
-
-        <div id="admin-upgrade-area" class="p-2 bg-black/40 flex gap-2 items-center mx-3 rounded-lg mb-2 border border-white/10">
-            <input id="admin-verify-input" type="password" placeholder="Admin Secret Code" class="flex-grow bg-transparent text-xs outline-none px-2 text-white">
-            <button onclick="verifyAdmin()" class="bg-yellow-600 text-[10px] px-3 py-1 rounded font-bold uppercase">Unlock</button>
-        </div>
-
-        <footer class="p-3 bg-[#111b21] flex items-center gap-2">
-            <input type="file" id="file-input" accept="image/*" onchange="uploadPhoto(this)" class="hidden">
-            <button onclick="document.getElementById('file-input').click()" class="text-gray-400 px-2 hover:text-white"><i class="fas fa-camera text-xl"></i></button>
-            <input id="msg-input" type="text" placeholder="Type a message..." class="flex-grow p-2.5 rounded-xl bg-[#2a3942] text-white outline-none text-sm">
-            <button id="send-btn" class="bg-green-600 w-11 h-11 rounded-full flex items-center justify-center text-white shadow-md"><i class="fas fa-paper-plane text-sm"></i></button>
-        </footer>
-    </div>
+    <button id="btnGoogle" class="w-full bg-white text-black py-3 rounded-xl font-bold">
+        Google Sign In
+    </button>
 </div>
 
-<audio id="msg-sound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
-
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, push, onValue, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-    import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyC4mYZ5G-WCjt7wAN0G6_B6rh1LDM10U0Q",
-        authDomain: "chat-data-59467.firebaseapp.com",
-        databaseURL: "https://chat-data-59467-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "chat-data-59467",
-        storageBucket: "chat-data-59467.firebasestorage.app",
-        messagingSenderId: "237808362163",
-        appId: "1:237808362163:web:52d25dfbffaffde12446c6"
-    };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const storage = getStorage(app);
+/* 🔐 BASIC OBFUSCATION (NOT REAL SECURITY) */
+const k1 = "AIzaSy";
+const k2 = "C4mYZ5G";
+const k3 = "-WCjt7wAN0G6_B6";
+const k4 = "rh1LDM10U0Q";
 
-    let currentRoom = null;
-    let currentUser = JSON.parse(localStorage.getItem('zero_user_data')) || { name: '', color: '', isAdmin: false };
-    let roomAdminCode = "";
+const firebaseConfig = {
+    apiKey: k1 + k2 + k3 + k4,
+    authDomain: "chat-data-59467.firebaseapp.com",
+    projectId: "chat-data-59467",
+    storageBucket: "chat-data-59467.appspot.com",
+    messagingSenderId: "237808362163",
+    appId: "1:237808362163:web:52d25dfbffaffde12446c6"
+};
 
-    window.onload = () => {
-        const activeRoom = localStorage.getItem('zero_active_room_id');
-        if (activeRoom && currentUser.name) {
-            startChat(activeRoom, currentUser.name, currentUser.isAdmin);
-        }
-        renderArchives();
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('room')) document.getElementById('join-room-id').value = urlParams.get('room');
-    };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-    window.toggleTheme = () => document.body.classList.toggle('light-theme');
-    window.showCreateOptions = () => document.getElementById('create-options').classList.toggle('hidden');
+/* Elements */
+const email = document.getElementById("email");
+const pass = document.getElementById("pass");
+const msg = document.getElementById("msg");
+const btnLogin = document.getElementById("btnLogin");
+const btnSignup = document.getElementById("btnSignup");
 
-    window.createRoom = async () => {
-        const name = document.getElementById('user-name').value;
-        if(!name) return alert("Enter your name first!");
-        
-        const roomId = (Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10)).toUpperCase();
-        const adminCode = Math.floor(1000 + Math.random() * 9000) + "ZR";
-        const mins = parseInt(document.getElementById('destroy-time').value) || 30;
-        
-        await set(ref(db, `rooms/${roomId}`), {
-            adminCode: adminCode,
-            creator: "Zero",
-            expiresAt: Date.now() + (mins * 60000)
-        });
-        
-        alert(`ROOM CREATED!\n\nRoom ID: ${roomId}\nAdmin Code: ${adminCode}\n\nDo not lose the admin code!`);
-        startChat(roomId, name, true);
-    };
+/* Auto redirect */
+onAuthStateChanged(auth, (user) => {
+    if (user) window.location.href = "chat.html";
+});
 
-    window.joinRoom = () => {
-        const name = document.getElementById('user-name').value;
-        const roomId = document.getElementById('join-room-id').value.trim();
-        if(name && roomId) startChat(roomId, name, false);
-        else alert("Please enter name and Room ID");
-    };
-
-    function startChat(roomId, name, isAdmin) {
-        currentRoom = roomId;
-        currentUser.name = name;
-        currentUser.isAdmin = isAdmin;
-        if(!currentUser.color) currentUser.color = `hsl(${Math.random() * 360}, 60%, 50%)`;
-        
-        localStorage.setItem('zero_active_room_id', roomId);
-        localStorage.setItem('zero_user_data', JSON.stringify(currentUser));
-
-        document.getElementById('menu-screen').classList.add('hidden');
-        document.getElementById('chat-screen').classList.remove('hidden');
-        document.getElementById('display-room-id').innerText = roomId;
-
-        const roomRef = ref(db, `rooms/${roomId}`);
-        onValue(roomRef, (snap) => {
-            if(!snap.exists()) {
-                alert("Room has expired or was destroyed.");
-                leaveChat(false);
-            } else {
-                roomAdminCode = snap.val().adminCode;
-                if(currentUser.isAdmin) document.getElementById('admin-delete-btn').classList.remove('hidden');
-            }
-        });
-
-        const msgRef = ref(db, `messages/${roomId}`);
-        onChildAdded(msgRef, (data) => {
-            renderMessage(data.val());
-            if(data.val().sender !== currentUser.name) document.getElementById('msg-sound').play().catch(()=>{});
-        });
+/* Validation */
+function validate() {
+    if (!email.value || !pass.value) {
+        msg.innerText = "Enter email & password";
+        return false;
     }
-
-    window.leaveChat = (save = true) => {
-        if(save && currentRoom) {
-            const history = document.getElementById('chat-messages').innerHTML;
-            const archives = JSON.parse(localStorage.getItem('zero_archives')) || [];
-            archives.push({ id: currentRoom, date: new Date().toLocaleString(), html: history });
-            localStorage.setItem('zero_archives', JSON.stringify(archives));
-        }
-        localStorage.removeItem('zero_active_room_id');
-        location.href = window.location.pathname;
-    };
-
-    window.renderArchives = () => {
-        const list = document.getElementById('archive-list');
-        const archives = JSON.parse(localStorage.getItem('zero_archives')) || [];
-        list.innerHTML = archives.length ? archives.map((a, i) => `
-            <div class="archive-item">
-                <div class="overflow-hidden">
-                    <p class="font-bold text-green-500">Room ${a.id.substring(0,6)}</p>
-                    <p class="text-[9px] text-gray-500">${a.date}</p>
-                </div>
-                <button onclick="viewArchive(${i})" class="text-xs bg-gray-700 px-3 py-1 rounded hover:bg-gray-600 transition">View</button>
-            </div>
-        `).join('') : "<p class='text-[10px] text-gray-700 text-center italic'>No local chat history available.</p>";
-    };
-
-    window.viewArchive = (i) => {
-        const a = JSON.parse(localStorage.getItem('zero_archives'))[i];
-        document.getElementById('menu-screen').classList.add('hidden');
-        document.getElementById('chat-screen').classList.remove('hidden');
-        document.getElementById('chat-messages').innerHTML = a.html;
-        document.getElementById('admin-upgrade-area').classList.add('hidden');
-        document.querySelector('footer').classList.add('hidden');
-        document.getElementById('display-room-id').innerText = "ARCHIVED VIEW";
-    };
-
-    window.verifyAdmin = () => {
-        if(document.getElementById('admin-verify-input').value === roomAdminCode) {
-            currentUser.isAdmin = true;
-            localStorage.setItem('zero_user_data', JSON.stringify(currentUser));
-            document.getElementById('admin-delete-btn').classList.remove('hidden');
-            document.getElementById('admin-upgrade-area').classList.add('hidden');
-        } else { alert("Incorrect Admin Secret"); }
-    };
-
-    window.shareRoom = () => {
-        const url = `${window.location.origin}${window.location.pathname}?room=${currentRoom}`;
-        if(navigator.share) navigator.share({ title: 'Join Zero Chat', url: url });
-        else prompt("Copy Link:", url);
-    };
-
-    window.uploadPhoto = async (input) => {
-        if(!input.files[0] || !currentRoom) return;
-        const fileRef = sRef(storage, `uploads/${currentRoom}/${Date.now()}`);
-        const snap = await uploadBytes(fileRef, input.files[0]);
-        const url = await getDownloadURL(snap.ref);
-        push(ref(db, `messages/${currentRoom}`), { sender: currentUser.name, color: currentUser.color, image: url, timestamp: Date.now() });
-    };
-
-    document.getElementById('send-btn').onclick = () => {
-        const val = document.getElementById('msg-input').value;
-        if(!val || !currentRoom) return;
-        push(ref(db, `messages/${currentRoom}`), { sender: currentUser.name, color: currentUser.color, text: val, timestamp: Date.now() });
-        document.getElementById('msg-input').value = "";
-    };
-
-    function renderMessage(msg) {
-        const div = document.createElement('div');
-        div.className = `bubble ${msg.sender === currentUser.name ? 'me' : 'them'}`;
-        div.innerHTML = `<b style="color:${msg.color};font-size:11px">${msg.sender}</b><br>` + 
-                        (msg.image ? `<img src="${msg.image}" class="img-msg">` : `<span>${msg.text}</span>`);
-        const container = document.getElementById('chat-messages');
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
+    if (pass.value.length < 6) {
+        msg.innerText = "Password must be 6+ characters";
+        return false;
     }
+    msg.innerText = "";
+    return true;
+}
 
-    window.destroyRoom = () => { if(confirm("Permanently destroy room for all users?")) { remove(ref(db, `rooms/${currentRoom}`)); remove(ref(db, `messages/${currentRoom}`)); } };
+/* Login */
+btnLogin.onclick = async () => {
+    if (!validate()) return;
+
+    btnLogin.innerText = "Loading...";
+    try {
+        await signInWithEmailAndPassword(auth, email.value, pass.value);
+    } catch (e) {
+        msg.innerText = e.message;
+    }
+    btnLogin.innerText = "Login";
+};
+
+/* Signup */
+btnSignup.onclick = async () => {
+    if (!validate()) return;
+
+    btnSignup.innerText = "Creating...";
+    try {
+        await createUserWithEmailAndPassword(auth, email.value, pass.value);
+        msg.innerText = "Account created!";
+    } catch (e) {
+        msg.innerText = e.message;
+    }
+    btnSignup.innerText = "Create Account";
+};
+
+/* Google */
+document.getElementById("btnGoogle").onclick = async () => {
+    try {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (e) {
+        msg.innerText = e.message;
+    }
+};
+
 </script>
+
 </body>
-    </html>
-    
+</html>
